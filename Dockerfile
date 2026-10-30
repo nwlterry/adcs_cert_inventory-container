@@ -13,16 +13,16 @@ RUN dotnet publish src/CertInventory/CertInventory.csproj \
     -o /out
 
 FROM mcr.microsoft.com/dotnet/runtime-deps:8.0
-RUN groupadd --gid 65532 app \
-    && useradd --uid 65532 --gid 65532 --no-create-home --shell /usr/sbin/nologin app \
-    && mkdir -p /data \
-    && chown app:app /data
+RUN mkdir -p /data \
+    && if ! getent group 65532 >/dev/null; then groupadd --gid 65532 caledger; fi \
+    && if ! getent passwd 65532 >/dev/null; then useradd --uid 65532 --gid 65532 --no-create-home --shell /usr/sbin/nologin caledger; fi \
+    && chown 65532:65532 /data
 WORKDIR /opt/ca-ledger
 COPY --from=build /out/ ./
 COPY docker/entrypoint.sh /opt/ca-ledger/entrypoint.sh
 RUN chmod 755 /opt/ca-ledger/entrypoint.sh \
     && chmod -R a+rX /opt/ca-ledger
-USER app
+USER 65532:65532
 EXPOSE 8787
 VOLUME ["/data"]
 ENV DOTNET_EnableDiagnostics=0 \
