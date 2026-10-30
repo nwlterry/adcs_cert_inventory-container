@@ -1,0 +1,8 @@
+.git
+bin
+obj
+dist
+data
+**/*.user
+*.tar
+*.tar.gz

@@ -1,0 +1,15 @@
+services:
+  ca-ledger:
+    image: ca-ledger:0.3.0-beta.1
+    build: .
+    ports:
+      - "8787:8787"
+    volumes:
+      - ./data:/data:ro
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
+    environment:
+      CA_LEDGER_LISTEN: http://+:8787/
+      CA_LEDGER_OUTPUT: /data/cert-inventory.json
+    user: "65532:65532"
